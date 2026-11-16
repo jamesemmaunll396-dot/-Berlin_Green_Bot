@@ -1,52 +1,3 @@
-us this one now and generate me the code to use >>>
-Welcome to this bot!
-
-❄️🌿💊
-🍀💊🚕
-
-❄️🍁 jon 💊🍀
-
-💎❄️ Anni 🍁🌿
-
- ❄️☃️  🌿🌳  🐴🚛  🍄🌈
-
-Click here to shop now.
-
-generate me the bot.py now to get started now
-
-Done! Your bot.py is ready with your exact welcome message, emojis, and Shop Now button.
-
- Your bot.py file has been generated.
-
-bot.py
-
-Ready
-📥 Download bot.py
-
-Before starting your bot
-Replace https://your-actual-store-link.com with your real shop URL.
-
-Set your Telegram bot token as BOT_TOKEN.
-
-Install the required packages:
-
-pip install "python-telegram-bot[job-queue]"
-
-4. Start your bot:
-
-python bot.py
-
-Note: Your 3-hour reminder is still included. User IDs are stored in memory and reset when the bot restarts.
-
-If you want, I can also help you deploy this bot 24/7 so it stays online even when your computer is off.
-
-
-bot.py
-Code
-
-
-
-
 import os
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -123,4 +74,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
