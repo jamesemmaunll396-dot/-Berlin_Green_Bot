@@ -1,4 +1,3 @@
-
 import os
 import logging
 
@@ -17,52 +16,33 @@ logging.basicConfig(
 )
 
 TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_USER_ID = os.environ.get("ADMIN_USER_ID")
 
-# Default bot mode
+# Set the default mode
 GLOBAL_BOT_MODE = "REDIRECT"
 
-# Replace these with your actual store links
+# Put your real Telegram destinations here
 REDIRECT_URL = "https://your-redirect-link.com"
 SHOPPING_URL = "https://your-shopping-link.com"
 
 user_chat_ids = set()
 
 
-def is_admin(update: Update):
-    if not ADMIN_USER_ID:
-        return False
-
-    return str(update.effective_user.id) == ADMIN_USER_ID
-
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_chat_ids.add(update.effective_chat.id)
 
+    welcome_text = (
+        "Welcome to this bot!\n\n"
+        "❄️🌿💊\n"
+        "🍀💊🚕\n\n"
+        "❄️🍁 jon 💊🍀\n\n"
+        "💎❄️ Anni 🍁🌿\n\n"
+        "❄️☃️  🌿🌳  🐴🚛  🍄🌈\n\n"
+        "Click here to shop now."
+    )
+
     if GLOBAL_BOT_MODE == "REDIRECT":
-        welcome_text = (
-            "Welcome to this bot!\n\n"
-            "❄️🌿💊\n"
-            "🍀💊🚕\n\n"
-            "❄️🍁 jon 💊🍀\n\n"
-            "💎❄️ Anni 🍁🌿\n\n"
-            "❄️☃️  🌿🌳  🐴🚛  🍄🌈\n\n"
-            "Click here to shop now."
-        )
-
         button_url = REDIRECT_URL
-
     else:
-        welcome_text = (
-            "Welcome to this bot!\n\n"
-            "❄️🌿💊\n"
-            "🍀💊🚕\n\n"
-            "❄️🍁 jon 💊🍀\n\n"
-            "💎❄️ Anni 🍁🌿\n\n"
-            "❄️☃️  🌿🌳  🐴🚛  🍄🌈\n\n"
-            "Click here to shop now."
-        )
-
         button_url = SHOPPING_URL
 
     keyboard = [
@@ -75,51 +55,56 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     await update.message.reply_text(
-        text=welcome_text,
+        welcome_text,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
-async def handle_admin_commands(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def change_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global GLOBAL_BOT_MODE
 
-    message = (update.message.text or "").strip().upper()
+    command = update.message.text.strip().upper()
 
-    if message not in ("REDIRECT", "REVERSE"):
-        return
-
-    if not is_admin(update):
-        logging.warning(
-            "Unauthorized mode change attempt from user %s",
-            update.effective_user.id
-        )
-        return
-
-    if message == "REDIRECT":
+    if command == "REDIRECT":
         GLOBAL_BOT_MODE = "REDIRECT"
 
         await update.message.reply_text(
-            "✅ REDIRECT mode activated!\n\n"
-            "The bot is now using the redirect welcome message."
+            "✅ REDIRECT MODE ACTIVATED!\n\n"
+            "All users will now receive the redirect link when they press /start."
         )
 
-    elif message == "REVERSE":
+    elif command == "REVERSE":
         GLOBAL_BOT_MODE = "REVERSE"
 
         await update.message.reply_text(
-            "✅ REVERSE mode activated!\n\n"
-            "The bot has returned to shopping mode."
+            "✅ REVERSE MODE ACTIVATED!\n\n"
+            "All users will now receive the shopping link when they press /start."
         )
 
-    logging.info("Bot mode changed to %s", GLOBAL_BOT_MODE)
+
+async def redirect_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global GLOBAL_BOT_MODE
+
+    GLOBAL_BOT_MODE = "REDIRECT"
+
+    await update.message.reply_text(
+        "✅ REDIRECT MODE ACTIVATED!"
+    )
+
+
+async def reverse_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global GLOBAL_BOT_MODE
+
+    GLOBAL_BOT_MODE = "REVERSE"
+
+    await update.message.reply_text(
+        "✅ REVERSE MODE ACTIVATED!"
+    )
 
 
 async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
     reminder_text = (
-        "🎉🎉🎉🎉✌✌❤❤\n\n"
+        "🎉🎉🎉🎉✌️✌️❤️❤️\n\n"
         "Don't forget to shop with us today!"
     )
 
@@ -138,19 +123,16 @@ def main():
     if not TOKEN:
         raise ValueError("BOT_TOKEN environment variable not set!")
 
-    if not ADMIN_USER_ID:
-        logging.warning(
-            "ADMIN_USER_ID is missing. Mode switching is disabled."
-        )
-
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("redirect", redirect_command))
+    application.add_handler(CommandHandler("reverse", reverse_command))
 
     application.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
-            handle_admin_commands
+            change_mode
         )
     )
 
@@ -160,10 +142,10 @@ def main():
         first=10
     )
 
-    logging.info("Telegram bot started in %s mode", GLOBAL_BOT_MODE)
+    logging.info("Bot started in %s mode", GLOBAL_BOT_MODE)
 
     application.run_polling()
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
